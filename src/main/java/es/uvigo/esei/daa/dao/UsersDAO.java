@@ -14,7 +14,7 @@ import es.uvigo.esei.daa.entities.User;
 /**
  * DAO class for managing the users of the system.
  * 
- * @author Miguel Reboiro Jato
+ * @author DRM
  */
 public class UsersDAO extends DAO {
 	private final static Logger LOG = Logger.getLogger(UsersDAO.class.getName());

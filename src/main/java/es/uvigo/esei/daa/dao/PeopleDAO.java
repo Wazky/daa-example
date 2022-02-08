@@ -15,7 +15,7 @@ import es.uvigo.esei.daa.entities.Person;
 /**
  * DAO class for the {@link Person} entities.
  * 
- * @author Miguel Reboiro Jato
+ * @author DRM
  *
  */
 public class PeopleDAO extends DAO {

@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * An entity that represents a person.
  * 
- * @author Miguel Reboiro Jato
+ * @author DRM
  */
 public class Person {
 	private int id;

@@ -17,7 +17,7 @@ import es.uvigo.esei.daa.dao.UsersDAO;
 /**
  * REST resource for managing users.
  * 
- * @author Miguel Reboiro Jato.
+ * @author DRM
  */
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)

@@ -21,7 +21,7 @@ import es.uvigo.esei.daa.entities.Person;
 /**
  * REST resource for managing people.
  * 
- * @author Miguel Reboiro Jato.
+ * @author DRM
  */
 @Path("/people")
 @Produces(MediaType.APPLICATION_JSON)
