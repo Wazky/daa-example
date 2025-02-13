@@ -1,6 +1,8 @@
 DAAExample
 ==========
 
+Modificado desde local y pushed a repo de gitlab
+
 Aplicación y arquitectura de ejemplo para la asignatura Desarrollo Ágil de
 Aplicaciones del Grado en Ingeniería Informática de la Escuela Superior de
 Ingeniería Informática de la Universidad de Vigo.
