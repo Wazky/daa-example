@@ -15,6 +15,16 @@ CREATE TABLE `daaexample`.`users` (
 	PRIMARY KEY (`login`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `daaexample`.`pets` (
+	`id_pet` int NOT NULL AUTO_INCREMENT,
+	`name` varchar(50) NOT NULL,
+	`specie` enum('Dog','Cat','Bird','Rabbit','Other') NOT NULL,
+	`breed` varchar(50),
+	`owner_id` int,
+	PRIMARY KEY (`id_pet`),
+	FOREIGN KEY (`owner_id`) REFERENCES `people`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE USER IF NOT EXISTS 'daa'@'localhost' IDENTIFIED WITH mysql_native_password BY 'daa';
 GRANT ALL ON `daaexample`.* TO 'daa'@'localhost';
 
@@ -32,3 +42,15 @@ INSERT INTO `daaexample`.`users` (`login`,`password`,`role`)
 VALUES ('admin', '713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca','ADMIN');
 INSERT INTO `daaexample`.`users` (`login`,`password`,`role`)
 VALUES ('normal', '7bf24d6ca2242430343ab7e3efb89559a47784eea1123be989c1b2fb2ef66e83','USER');
+
+
+INSERT INTO `daaexample`.`pets` (`id_pet`, `name`, `specie`, `breed`, `owner_id`)
+VALUES (0, 'Tweety', 'Bird', 'Canary', 1);
+INSERT INTO `daaexample`.`pets` (`id_pet`, `name`, `specie`, `breed`, `owner_id`)
+VALUES (0, 'Max', 'Dog', 'Golden Retriever', 1);
+INSERT INTO `daaexample`.`pets` (`id_pet`, `name`, `specie`, `breed`, `owner_id`)
+VALUES (0, 'Mittens', 'Cat', 'Siamese', 3);
+INSERT INTO `daaexample`.`pets` (`id_pet`, `name`, `specie`, `breed`, `owner_id`)
+VALUES (0, 'Bella', 'Dog', 'Bulldog', 5);
+INSERT INTO `daaexample`.`pets` (`id_pet`, `name`, `specie`, `breed`, `owner_id`)
+VALUES (0, 'Coco', 'Rabbit', 'Holland Lop', 7);

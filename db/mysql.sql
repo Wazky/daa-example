@@ -23,7 +23,7 @@ CREATE TABLE `daaexample`.`pets` (
 	`owner_id` int,
 	PRIMARY KEY (`id_pet`),
 	FOREIGN KEY (`owner_id`) REFERENCES `people`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE USER IF NOT EXISTS 'daa'@'localhost' IDENTIFIED WITH mysql_native_password BY 'daa';
 GRANT ALL ON `daaexample`.* TO 'daa'@'localhost';
