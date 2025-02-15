@@ -55,3 +55,4 @@ VALUES (0, 'Bella', 'DOG', 'Bulldog', 5);
 INSERT INTO `daaexample`.`pets` (`id_pet`, `name`, `specie`, `breed`, `owner_id`)
 VALUES (0, 'Coco', 'OTHER', 'Holland Lop', 7);
 
+
