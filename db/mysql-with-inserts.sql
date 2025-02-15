@@ -18,7 +18,7 @@ CREATE TABLE `daaexample`.`users` (
 CREATE TABLE `daaexample`.`pets` (
 	`id_pet` int NOT NULL AUTO_INCREMENT,
 	`name` varchar(50) NOT NULL,
-	`specie` enum('Dog','Cat','Bird','Rabbit','Other') NOT NULL,
+	`specie` enum('DOG','CAT','BIRD','RABBIT','OTHER') NOT NULL,
 	`breed` varchar(50),
 	`owner_id` int,
 	PRIMARY KEY (`id_pet`),
@@ -45,12 +45,13 @@ VALUES ('normal', '7bf24d6ca2242430343ab7e3efb89559a47784eea1123be989c1b2fb2ef66
 
 
 INSERT INTO `daaexample`.`pets` (`id_pet`, `name`, `specie`, `breed`, `owner_id`)
-VALUES (0, 'Tweety', 'Bird', 'Canary', 1);
+VALUES (0, 'Tweety', 'BIRD', 'Canary', 1);
 INSERT INTO `daaexample`.`pets` (`id_pet`, `name`, `specie`, `breed`, `owner_id`)
-VALUES (0, 'Max', 'Dog', 'Golden Retriever', 1);
+VALUES (0, 'Max', 'DOG', 'Golden Retriever', 1);
 INSERT INTO `daaexample`.`pets` (`id_pet`, `name`, `specie`, `breed`, `owner_id`)
-VALUES (0, 'Mittens', 'Cat', 'Siamese', 3);
+VALUES (0, 'Mittens', 'CAT', 'Siamese', 3);
 INSERT INTO `daaexample`.`pets` (`id_pet`, `name`, `specie`, `breed`, `owner_id`)
-VALUES (0, 'Bella', 'Dog', 'Bulldog', 5);
+VALUES (0, 'Bella', 'DOG', 'Bulldog', 5);
 INSERT INTO `daaexample`.`pets` (`id_pet`, `name`, `specie`, `breed`, `owner_id`)
-VALUES (0, 'Coco', 'Rabbit', 'Holland Lop', 7);
+VALUES (0, 'Coco', 'OTHER', 'Holland Lop', 7);
+
