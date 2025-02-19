@@ -77,9 +77,13 @@ public class PetDAO extends DAO {
      * Persist a new pet in the system. The pet must have a valid owner.
      * An identifier will be assigned automatically to the new pet.
      * 
-     * @param 
-     * @return
-     * @throws SQLException
+     * @param name name of the pet. Can't be {@code null}.
+     * @param specie specie of the pet. Can't be {@code null}.
+     * @param breed breed of the pet.
+     * @param owner_id identifier of the owner of the pet.
+     * @return a {@link Pet} instance representing the persisted pet.
+     * @throws DAOException if an error happens while persisting the new pet.
+     * @throws IllegalArgumentException if the name or specie are {@code null}.
      */
     public Pet add(String name, Species specie, String breed, int owner_id)
     throws DAOException, IllegalArgumentException {
