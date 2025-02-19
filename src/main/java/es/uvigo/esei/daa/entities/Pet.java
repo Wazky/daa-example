@@ -18,7 +18,7 @@ public class Pet {
     Pet() {}
 
     /** */      
-    public Pet(int id, String name, String specie, String breed, int owner_id) {
+    public Pet(int id, String name, Species specie, String breed, int owner_id) {
         this.id = id;
 
     }
