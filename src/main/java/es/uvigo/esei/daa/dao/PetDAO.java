@@ -20,6 +20,7 @@ import es.uvigo.esei.daa.entities.Species;
  */
 public class PetDAO extends DAO {
     private final static Logger LOG = Logger.getLogger(PetDAO.class.getName());
+    private final PeopleDAO peopleDAO = new PeopleDAO();
 
     /**
      * Returns a pet stored persisted in the system.
@@ -77,6 +78,35 @@ public class PetDAO extends DAO {
             throw new DAOException(e);
         }
     }
+
+    public List<Pet> list(int owner_id) throws DAOException {
+        try (final Connection conn = this.getConnection()) {
+            //Check if the owner exists
+            if (!peopleDAO.check(owner_id, conn)){ 
+                throw new IllegalArgumentException("Invalid owner id");
+            }
+
+            final String query = "SELECT * FROM pets WHERE owner_id=?";
+
+            try (final PreparedStatement statement = conn.prepareStatement(query)) {
+                statement.setInt(1, owner_id);
+
+                try (final ResultSet result = statement.executeQuery()) {
+                    final List<Pet> pets = new LinkedList<>();
+                    while (result.next()) {
+                        pets.add(rowToEntity(result));
+                    }
+
+                    return pets;
+
+                }
+            }
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Error listing pets", e);
+            throw new DAOException(e);
+        }
+    }
+
 
     /**
      * Persist a new pet in the system. The pet must have a valid owner.
@@ -139,26 +169,21 @@ public class PetDAO extends DAO {
         if (pet == null) {
             throw new IllegalArgumentException("Pet can't be null");
         }
+
         try (Connection conn = this.getConnection()) {
-            final String check_owner_query =  "SELECT COUNT(*) FROM people WHERE id=?";
-
-            try (PreparedStatement statement = conn.prepareStatement(check_owner_query)) {
-                statement.setInt(1, pet.getOwnerId());
-
-                try (final ResultSet result = statement.executeQuery()) {
-                    if (result.next() && result.getInt(1) == 1) {
-                        throw new IllegalArgumentException("Invalid owner id");
-                    }
-                }
+            //Check if the owner exists
+            if (!peopleDAO.check(pet.getOwnerId(), conn)){
+                throw new IllegalArgumentException("Invalid owner id");
             }
 
-            final String query = "UPDATE pets SET name=?, specie=?, breed=?, owner_id=? WHERE pet_id=?";
+            final String update_query = "UPDATE pets SET name=?, specie=?, breed=?, owner_id=? WHERE pet_id=?";
 
-            try (PreparedStatement statement = conn.prepareStatement(query)) {
+            try (PreparedStatement statement = conn.prepareStatement(update_query)) {
                 statement.setString(1, pet.getName());
                 statement.setString(2, pet.getSpecies().name());
                 statement.setString(3, pet.getBreed());
                 statement.setInt(4, pet.getOwnerId());
+                statement.setInt(5, pet.getId());
 
                 if (statement.executeUpdate() != 1) {
                     throw new IllegalArgumentException("name and specie can't be null");
@@ -207,5 +232,6 @@ public class PetDAO extends DAO {
             row.getInt("owner_id")
         );
     }
+
 
 }

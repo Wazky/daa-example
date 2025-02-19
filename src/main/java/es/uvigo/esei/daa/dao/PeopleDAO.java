@@ -181,6 +181,20 @@ public class PeopleDAO extends DAO {
 		}
 	}
 	
+
+	public boolean check(int id, Connection conn) throws SQLException{
+		final String query = "SELECT 1 FROM people WHERE id=?";
+
+		try (final PreparedStatement statement = conn.prepareStatement(query)) {
+			statement.setInt(1, id);
+
+			try (final ResultSet result = statement.executeQuery()) {
+				return result.next();
+			}
+
+		}
+	}
+
 	private Person rowToEntity(ResultSet row) throws SQLException {
 		return new Person(
 			row.getInt("id"),
