@@ -16,12 +16,12 @@ CREATE TABLE `daaexample`.`users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `daaexample`.`pets` (
-	`id_pet` int NOT NULL AUTO_INCREMENT,
+	`pet_id` int NOT NULL AUTO_INCREMENT,
 	`name` varchar(50) NOT NULL,
 	`specie` enum('DOG','CAT','BIRD','RABBIT','OTHER') NOT NULL,
 	`breed` varchar(50),
 	`owner_id` int,
-	PRIMARY KEY (`id_pet`),
+	PRIMARY KEY (`pet_id`),
 	FOREIGN KEY (`owner_id`) REFERENCES `people`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

@@ -14,21 +14,26 @@ import es.uvigo.esei.daa.entities.Pet;
 import es.uvigo.esei.daa.entities.Species;
 
 /**
- * Returns a pet stored persisted in the system.
+ * DAO class for the {@link Pet} entities.
  * 
- * @param id identifier of the pet.
- * @return a pet with the provided identifier.
- * @throws DAOException if an error happens while retrieving the pet.
- * @throws IllegalArgumentException if the provided id does not corresponds
- * with any persisted pet.
+ * @author Isma
  */
 public class PetDAO extends DAO {
     private final static Logger LOG = Logger.getLogger(PetDAO.class.getName());
 
+    /**
+     * Returns a pet stored persisted in the system.
+     * 
+     * @param id identifier of the pet.
+     * @return a pet with the provided identifier.
+     * @throws DAOException if an error happens while retrieving the pet.
+     * @throws IllegalArgumentException if the provided id does not corresponds
+     * with any persisted pet.
+     */    
     public Pet get(int id) 
     throws DAOException, IllegalArgumentException{
         try (final Connection conn = this.getConnection()) {
-            final String query = "SELECT * FROM pets WHERE id=?";
+            final String query = "SELECT * FROM pets WHERE pet_id=?";
 
             try (final PreparedStatement statement = conn.prepareStatement(query)) {
                 statement.setInt(1, id);
@@ -103,13 +108,7 @@ public class PetDAO extends DAO {
                 if (statement.executeUpdate() == 1) {
                     try (ResultSet resultKeys = statement.getGeneratedKeys()) {
                         if (resultKeys.next()) {
-                            return new Pet(
-                                resultKeys.getInt(1),
-                                name,
-                                specie,
-                                breed,
-                                owner_id
-                            );
+                            return new Pet(resultKeys.getInt(1), name, specie, breed, owner_id );                                
                         } else {
                             LOG.log(Level.SEVERE, "Error retrieving inserted id");
                             throw new SQLException("Error retrieving inserted id");
@@ -124,13 +123,84 @@ public class PetDAO extends DAO {
             LOG.log(Level.SEVERE, "Error adding a pet", e);
             throw new DAOException(e);
         }
+    }
+
+    /**
+     * Modifies a pet previously persisted in the system. The pet will be
+     * identified by its identifier. It's current name, specie, breed and owner
+     * will be replaced by the provided ones.
+     * 
+     * @param pet a {@link Pet} entity with the new data.
+     * @throws DAOException if an error happens while modifying the pet.
+     * @throws IllegalArgumentException if the pet is {@code null}.
+     */
+    public void modify(Pet pet)
+    throws DAOException, IllegalArgumentException {
+        if (pet == null) {
+            throw new IllegalArgumentException("Pet can't be null");
+        }
+        try (Connection conn = this.getConnection()) {
+            final String check_owner_query =  "SELECT COUNT(*) FROM people WHERE id=?";
+
+            try (PreparedStatement statement = conn.prepareStatement(check_owner_query)) {
+                statement.setInt(1, pet.getOwnerId());
+
+                try (final ResultSet result = statement.executeQuery()) {
+                    if (result.next() && result.getInt(1) == 1) {
+                        throw new IllegalArgumentException("Invalid owner id");
+                    }
+                }
+            }
+
+            final String query = "UPDATE pets SET name=?, specie=?, breed=?, owner_id=? WHERE pet_id=?";
+
+            try (PreparedStatement statement = conn.prepareStatement(query)) {
+                statement.setString(1, pet.getName());
+                statement.setString(2, pet.getSpecies().name());
+                statement.setString(3, pet.getBreed());
+                statement.setInt(4, pet.getOwnerId());
+
+                if (statement.executeUpdate() != 1) {
+                    throw new IllegalArgumentException("name and specie can't be null");
+                }
+            }
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Error modifying a pet", e);
+            throw new DAOException();
+        }
+    }
+
+    /**
+     * Removes a persisted pet from the system.
+     * 
+     * @param id identifier of the pet to be deleted.
+     * @throws DAOException if an error happens while deleting the pet.
+     * @throws IllegalArgumentException if the provided id does not corresponds
+     * with any persisted pet.
+     */
+    public void delete(int id) 
+    throws DAOException, IllegalArgumentException {
+        try (final Connection conn = this.getConnection()) {
+            final String query = "DELETE FROM pets WHERE pet_id=?";
+
+            try (final PreparedStatement statement = conn.prepareStatement(query)) {
+                statement.setInt(1, id);
+
+                if (statement.executeUpdate() != 1) {
+                    throw new IllegalArgumentException("Invalid id");
+                }
+            }
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Error deleting a pet", e);
+            throw new DAOException(e);
+        }
 
     }
 
 
     private Pet rowToEntity(ResultSet row) throws SQLException{
         return new Pet(
-            row.getInt("id_pet"),
+            row.getInt("pet_id"),
             row.getString("name"),
             Species.valueOf(row.getString("specie")),
             row.getString("breed"),
