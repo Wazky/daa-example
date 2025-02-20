@@ -114,7 +114,7 @@ public class PeopleResource {
 			
 			return Response.ok(newPerson).build();
 		} catch (IllegalArgumentException iae) {
-			LOG.log(Level.FINE, "Invalid person id in add method", iae);
+			LOG.log(Level.FINE, "Invalid input data in add method: " + iae.getMessage(), iae);
 			
 			return Response.status(Response.Status.BAD_REQUEST)
 				.entity(iae.getMessage())

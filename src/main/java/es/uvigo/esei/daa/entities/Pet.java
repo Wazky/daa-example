@@ -2,11 +2,14 @@ package es.uvigo.esei.daa.entities;
 
 import static java.util.Objects.requireNonNull;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * An entity that represents a pet
  * 
  * @author Ismael
  */
+@JsonPropertyOrder({ "id", "name", "specie", "breed", "owner_id" })
 public class Pet {
     private int id;    
     private String name;
@@ -17,10 +20,21 @@ public class Pet {
     //Constructor needed for the JSON conversion
     Pet() {}
 
-    /** */      
+    /**
+     * Constructs a new instance of {@link Pet}
+     * 
+     * @param id identifier of the pet
+     * @param name name of the pet
+     * @param specie specie of the pet
+     * @param breed breed of the pet
+     * @param owner_id id of the pet owner
+     */      
     public Pet(int id, String name, Species specie, String breed, int owner_id) {
         this.id = id;
-
+        this.setName(name);
+        this.setSpecies(specie);
+        this.setBreed(breed);
+        this.setOwnerId(owner_id);
     }
 
     /**
@@ -64,6 +78,7 @@ public class Pet {
      * Set the specie of this pet
      * 
      * @param specie the new specie of the pet
+     * @throws NullPointerException if the {@code specie} is {@code null}
      */
     public void setSpecies(Species specie) {
         this.specie = requireNonNull(specie, "Specie can't be null");
@@ -96,7 +111,12 @@ public class Pet {
         return owner_id;
     }
 
-    /** */
+    /**
+     * Set the id of the pet owner
+     * 
+     * @param owner_id the new id of the pet owner
+     * @throws NullPointerException if the {@code owner_id} is {@code null}
+     */
     public void setOwnerId(int owner_id) {
         this.owner_id = requireNonNull(owner_id, "Owner id can't be null");
     }

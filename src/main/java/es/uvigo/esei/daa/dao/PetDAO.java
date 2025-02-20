@@ -79,10 +79,21 @@ public class PetDAO extends DAO {
         }
     }
 
-    public List<Pet> list(int owner_id) throws DAOException {
+    /**
+     * Returns a list with all the pets persisted in the system that belongs to a
+     * specific owner.
+     * 
+     * @param owner_id identifier of the owner of the pets.
+     * @return a list with all the pets persisted in the system that belongs to the
+     * provided owner.
+     * @throws DAOException if an error happens while retrieving the pets.
+     * @throws IllegalArgumentException if the provided owner_id does not corresponds
+     */
+    public List<Pet> list(int owner_id) 
+    throws DAOException, IllegalArgumentException{
         try (final Connection conn = this.getConnection()) {
             //Check if the owner exists
-            if (!peopleDAO.check(owner_id, conn)){ 
+            if (!this.peopleDAO.check(owner_id, conn)){ 
                 throw new IllegalArgumentException("Invalid owner id");
             }
 
@@ -127,6 +138,11 @@ public class PetDAO extends DAO {
         }
 
         try (Connection conn = this.getConnection()) {
+            
+            if (!this.peopleDAO.check(owner_id, conn)) {
+                throw new IllegalArgumentException("Invalid owner id");
+            }
+
             final String query = "INSERT INTO pets (pet_id, name, specie, breed, owner_id) VALUES (null, ?, ?, ?, ?)";
 
             try (PreparedStatement statement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
