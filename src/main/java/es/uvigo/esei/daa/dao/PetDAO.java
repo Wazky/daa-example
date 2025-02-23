@@ -20,7 +20,6 @@ import es.uvigo.esei.daa.entities.Species;
  */
 public class PetDAO extends DAO {
     private final static Logger LOG = Logger.getLogger(PetDAO.class.getName());
-    private final PeopleDAO peopleDAO = new PeopleDAO();
 
     /**
      * Returns a pet stored persisted in the system.

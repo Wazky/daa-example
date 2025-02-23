@@ -16,33 +16,40 @@ var PeopleDAO = (function() {
     };
 
     function PeopleDAO() {
+	this.getPerson = function(id, done, fail, always){
+		requestByAjax({
+			url : resourcePath + id,
+			type : 'GET'
+		}, done, fail, always);
+	};
+
 	this.listPeople = function(done, fail, always) {
-	    requestByAjax({
-		url : resourcePath,
-		type : 'GET'
-	    }, done, fail, always);
+		requestByAjax({
+			url : resourcePath,
+			type : 'GET'
+		}, done, fail, always);
 	};
 
 	this.addPerson = function(person, done, fail, always) {
 	    requestByAjax({
-		url : resourcePath,
-		type : 'POST',
-		data : person
+			url : resourcePath,
+			type : 'POST',
+			data : person
 	    }, done, fail, always);
 	};
 
 	this.modifyPerson = function(person, done, fail, always) {
 	    requestByAjax({
-		url : resourcePath + person.id,
-		type : 'PUT',
-		data : person
+			url : resourcePath + person.id,
+			type : 'PUT',
+			data : person
 	    }, done, fail, always);
 	};
 
 	this.deletePerson = function(id, done, fail, always) {
 	    requestByAjax({
-		url : resourcePath + id,
-		type : 'DELETE',
+			url : resourcePath + id,
+			type : 'DELETE',
 	    }, done, fail, always);
 	};
     }
