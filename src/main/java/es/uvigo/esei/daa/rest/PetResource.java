@@ -15,28 +15,27 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import es.uvigo.esei.daa.dao.DAOException;
-import es.uvigo.esei.daa.dao.PetDAO;
 import es.uvigo.esei.daa.entities.Pet;
-
 import es.uvigo.esei.daa.entities.Species;
+import es.uvigo.esei.daa.services.PetService;
 
 @Path("/pets")
 @Produces(MediaType.APPLICATION_JSON)
 public class PetResource {  
     private final static Logger LOG = Logger.getLogger(PetResource.class.getName());
     
-    private final PetDAO dao;
+    private final PetService service;
 
     /**
      * Constructs a new instance of {@link PetResource}.
      */
     public PetResource() {
-        this(new PetDAO());
+        this(new PetService());
     }
 
     // Needed for testing purposes
-    PetResource(PetDAO dao) {
-        this.dao = dao;
+    PetResource(PetService service) {
+        this.service = service;
     }
 
     /**
@@ -53,7 +52,7 @@ public class PetResource {
     @Path("/{id}")
     public Response get(@PathParam("id") int id) {
         try {
-            final Pet pet = this.dao.get(id);
+            final Pet pet = this.service.getPet(id);
 
             return Response.ok(pet).build();
         } catch (IllegalArgumentException iae) {
@@ -77,7 +76,7 @@ public class PetResource {
     @GET
     public Response list() {
         try {
-            return Response.ok(this.dao.list()).build();
+            return Response.ok(this.service.listPets()).build();
         } catch (DAOException e) {
             LOG.log(Level.SEVERE, "Error listing pets", e);
             return Response.serverError().entity(e.getMessage()).build();
@@ -89,7 +88,7 @@ public class PetResource {
     @Path("/owner/{owner_id}")
     public Response listByOwner(@PathParam("owner_id") int  owner_id) {
         try {
-            return Response.ok(this.dao.list(owner_id)).build();
+            return Response.ok(this.service.listByOwner(owner_id)).build();
         } catch (IllegalArgumentException iae) {
             LOG.log(Level.FINE, "Invalid owner id in list method", iae);
 
@@ -123,7 +122,7 @@ public class PetResource {
         @FormParam("owner_id") int owner_id 
     ) {
         try {
-            final Pet newPet = this.dao.add(name, specie, breed, owner_id);
+            final Pet newPet = this.service.addPet(name, specie, breed, owner_id);
 
             return Response.ok(newPet).build();
         } catch (IllegalArgumentException iae) {
@@ -158,8 +157,7 @@ public class PetResource {
         @FormParam("owner_id") int owner_id
     ) {
         try{
-            final Pet modifiedPet = new Pet(id, name, specie, breed, owner_id);
-            this.dao.modify(modifiedPet);
+            Pet modifiedPet = this.service.updatePet(id, name, specie, breed, owner_id);
 
             return Response.ok(modifiedPet).build();
         } catch (NullPointerException npe) {
@@ -183,7 +181,7 @@ public class PetResource {
     @Path("/{id}")  
     public Response delete( @PathParam("id") int id) {
         try{
-            this.dao.delete(id);
+            this.service.deletePet(id);
 
             return Response.ok(id).build();
         } catch (IllegalArgumentException iae) {

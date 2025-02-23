@@ -32,7 +32,7 @@ public class PetDAO extends DAO {
      * with any persisted pet.
      */    
     public Pet get(int id) 
-    throws DAOException, IllegalArgumentException{
+    throws DAOException {
         try (final Connection conn = this.getConnection()) {
             final String query = "SELECT * FROM pets WHERE pet_id=?";
 
@@ -40,11 +40,7 @@ public class PetDAO extends DAO {
                 statement.setInt(1, id);
 
                 try (final ResultSet result = statement.executeQuery()) {
-                    if (result.next()) {
-                        return rowToEntity(result);
-                    } else {
-                        throw new IllegalArgumentException("Invalid id");
-                    }
+                    return result.next() ? rowToEntity(result) : null;
                 }
             }
         } catch (SQLException e) {
@@ -71,6 +67,7 @@ public class PetDAO extends DAO {
                     }
 
                     return pets;
+
                 }
             }
         } catch (SQLException e) {
@@ -89,14 +86,9 @@ public class PetDAO extends DAO {
      * @throws DAOException if an error happens while retrieving the pets.
      * @throws IllegalArgumentException if the provided owner_id does not corresponds
      */
-    public List<Pet> list(int owner_id) 
-    throws DAOException, IllegalArgumentException{
+    public List<Pet> listByOwner(int owner_id) 
+    throws DAOException {
         try (final Connection conn = this.getConnection()) {
-            //Check if the owner exists
-            if (!this.peopleDAO.check(owner_id, conn)){ 
-                throw new IllegalArgumentException("Invalid owner id");
-            }
-
             final String query = "SELECT * FROM pets WHERE owner_id=?";
 
             try (final PreparedStatement statement = conn.prepareStatement(query)) {
@@ -132,17 +124,8 @@ public class PetDAO extends DAO {
      * @throws IllegalArgumentException if the name or specie are {@code null}.
      */
     public Pet add(String name, Species specie, String breed, int owner_id)
-    throws DAOException, IllegalArgumentException {
-        if (name == null || specie == null ) {
-            throw new IllegalArgumentException("Name and specie can't be null");
-        }
-
+    throws DAOException {
         try (Connection conn = this.getConnection()) {
-            
-            if (!this.peopleDAO.check(owner_id, conn)) {
-                throw new IllegalArgumentException("Invalid owner id");
-            }
-
             final String query = "INSERT INTO pets (pet_id, name, specie, breed, owner_id) VALUES (null, ?, ?, ?, ?)";
 
             try (PreparedStatement statement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -182,16 +165,7 @@ public class PetDAO extends DAO {
      */
     public void modify(Pet pet)
     throws DAOException, IllegalArgumentException {
-        if (pet == null) {
-            throw new IllegalArgumentException("Pet can't be null");
-        }
-
         try (Connection conn = this.getConnection()) {
-            //Check if the owner exists
-            if (!peopleDAO.check(pet.getOwnerId(), conn)){
-                throw new IllegalArgumentException("Invalid owner id");
-            }
-
             final String update_query = "UPDATE pets SET name=?, specie=?, breed=?, owner_id=? WHERE pet_id=?";
 
             try (PreparedStatement statement = conn.prepareStatement(update_query)) {
@@ -201,8 +175,8 @@ public class PetDAO extends DAO {
                 statement.setInt(4, pet.getOwnerId());
                 statement.setInt(5, pet.getId());
 
-                if (statement.executeUpdate() != 1) {
-                    throw new IllegalArgumentException("name and specie can't be null");
+                if (statement.executeUpdate() == 0) {
+                    throw new IllegalArgumentException("Invalid id");
                 }
             }
         } catch (SQLException e) {
