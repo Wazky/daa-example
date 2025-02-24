@@ -8,7 +8,7 @@ var PetDAO = (function() {
         let authToken = localStorage.getItem('authorization-token');
         if (authToken !== null) {
             data.beforeSend = function(xhr) {
-            xhr.setRequestHeader('Authorization', 'Basic ' + authToken);
+                xhr.setRequestHeader('Authorization', 'Basic ' + authToken);
             };
         }
 
