@@ -17,7 +17,7 @@ var PetView = (function(){
 
         this.init = function() {
             dao.listPets(function(pets){
-                $.each(pet, function(key, pets) {
+                $.each(pets, function(key, pet) {
                     appendToTable(pet);
                 });
             },
@@ -92,11 +92,11 @@ var PetView = (function(){
 
                 form.find('input[name="id"]').val(id);
                 form.find('input[name="name"]').val(row.find('td.name').text());
-                form.find('input[name="specie"]').val(row.find('td.specie')).text();
-                form.find('input[name="breed"]').val(row.find('td.breed')).text();
-                form.find('input[name="owner_id"]').val(row.find('td.owner_id')).text();
+                form.find('input[name="specie"]').val(row.find('td.specie').text());
+                form.find('input[name="breed"]').val(row.find('td.breed').text());
+                form.find('input[name="owner_id"]').val(row.find('td.owner_id').text());
 
-                $('input#btnSubmit'),val('Modificar');
+                $('input#btnSubmit').val('Modificar');
             }
         };
 

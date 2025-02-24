@@ -13,7 +13,7 @@
 				<a href="#" class="navbar-brand d-flex align-items-center">
 					<strong>DAA	Example</strong>
 				</a>
-				<button id="go-pets"  class="btn btn-dark">Mascotas</button>
+				<button id="go-to-pets"  class="btn btn-dark">Mascotas</button>
 				<button id="logout" class="btn btn-dark">Cerrar sesión</button>
 			</div>
 		</div>
@@ -38,9 +38,9 @@
 				doLogout();
 		    });
 
-			$('#go-pets').click(function(event) {
+			$('#go-to-pets').click(function(event) {
 				event.preventDefault();
-				window.location.href = 'testpets.html';	
+				window.location.href = 'pets.html';	
 			});
 
 		    var view = new PeopleView(new PeopleDAO(),
