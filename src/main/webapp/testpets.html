@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Test Pet DAO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Test Pet DAO</h1>
+        <button id="list-pets" class="btn btn-primary mt-3">List Pets</button>
+        <button id="add-pet" class="btn btn-success mt-3">Add Pet</button>
+        <button id="modify-pet" class="btn btn-warning mt-3">Modify Pet</button>
+        <button id="delete-pet" class="btn btn-danger mt-3">Delete Pet</button>
+        <div id="result" class="mt-3"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/dao/pet.js"></script>
+    <script>
+        $(document).ready(function() {
+            var petDAO = new PetDAO();
+
+            $('#list-pets').click(function() {
+                petDAO.listPets(function(data) {
+                    $('#result').html('<pre>' + JSON.stringify(data, null, 2) + '</pre>');
+                }, function(error) {
+                    $('#result').html('<pre>' + JSON.stringify(error, null, 2) + '</pre>');
+                });
+            });
+
+            $('#add-pet').click(function() {
+                var newPet = { name: "Buddy", specie: "DOG", breed: "Labrador", owner_id: 1 };
+                petDAO.addPet(newPet, function(data) {
+                    $('#result').html('<pre>' + JSON.stringify(data, null, 2) + '</pre>');
+                }, function(error) {
+                    $('#result').html('<pre>' + JSON.stringify(error, null, 2) + '</pre>');
+                });
+            });
+
+            $('#modify-pet').click(function() {
+                var modifiedPet = { id: 1, name: "Buddy", specie: "DOG", breed: "Golden Retriever", owner_id: 1 };
+                petDAO.modifyPet(modifiedPet, function(data) {
+                    $('#result').html('<pre>' + JSON.stringify(data, null, 2) + '</pre>');
+                }, function(error) {
+                    $('#result').html('<pre>' + JSON.stringify(error, null, 2) + '</pre>');
+                });
+            });
+
+            $('#delete-pet').click(function() {
+                petDAO.deletePet(1, function(data) {
+                    $('#result').html('<pre>' + JSON.stringify(data, null, 2) + '</pre>');
+                }, function(error) {
+                    $('#result').html('<pre>' + JSON.stringify(error, null, 2) + '</pre>');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
