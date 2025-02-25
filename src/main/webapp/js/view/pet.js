@@ -14,15 +14,20 @@ var PetView = (function(){
     var listPetsOwnerQuery = '#' + listPetsOwnerId;
     var formPetOwnerQuery = '#' + formPetOwnerId;
 
-    function PetView(petDao,  petsContainerId, petsByOwnerContainerId) {
+    function PetView(petDao, mainContainerId, petsContainerId, petsByOwnerContainerId) {
         dao = petDao;
         self = this;
 
+        insertToggleViewHeader($('#' + mainContainerId));
+        addToggleViewListener();
+        
         insertOwnerPetsForm($('#' + petsByOwnerContainerId));
         insertOwnerPetsList($('#' + petsByOwnerContainerId));
         insertPetForm($('#' + petsContainerId));        
         insertPetList($('#' + petsContainerId));
 
+        //Ocultar al cargar pagina listar por id owner
+        $('#' + petsByOwnerContainerId).hide();
         this.init = function() {
             dao.listPets(function(pets){
                 $.each(pets, function(key, pet) {
@@ -55,14 +60,14 @@ var PetView = (function(){
 
             $(formQuery).submit(function(event) {
                 var pet = self.getPetInForm();
-
+                console.log(pet);
                 if (self.isEditing()) {
                     dao.modifyPet(pet,
                         function(pet) {
                             $('#pet-' + pet.id + ' td.name').text(pet.name);
-                            $('#pet-' + pet.id + ' td.name').text(pet.specie);
-                            $('#pet-' + pet.id + ' td.name').text(pet.breed);
-                            $('#pet-' + pet.id + ' td.name').text(pet.owner_id);
+                            $('#pet-' + pet.id + ' td.species').text(pet.species);
+                            $('#pet-' + pet.id + ' td.breed').text(pet.breed);
+                            $('#pet-' + pet.id + ' td.ownerId').text(pet.ownerId);
                             self.resetForm(formQuery);
                         },
                         showErrorMessage,
@@ -108,9 +113,9 @@ var PetView = (function(){
                 return {
                     'id' : id,
                     'name' : row.find('td.name').text(),
-                    'specie' : row.find('td.specie').text(),
+                    'species' : row.find('td.specie').text(),
                     'breed' : row.find('td.breed').text(),
-                    'owner_id' : row.find('td.owner_id').text()
+                    'ownerId' : row.find('td.owner_id').text()
                 };
             } else {
                 return undefined;
@@ -125,9 +130,9 @@ var PetView = (function(){
 
                 form.find('input[name="id"]').val(id);
                 form.find('input[name="name"]').val(row.find('td.name').text());
-                form.find('input[name="specie"]').val(row.find('td.specie').text());
+                form.find('input[name="specie"]').val(row.find('td.species').text());
                 form.find('input[name="breed"]').val(row.find('td.breed').text());
-                form.find('input[name="owner_id"]').val(row.find('td.owner_id').text());
+                form.find('input[name="owner_id"]').val(row.find('td.ownerId').text());
 
                 $('input#btnSubmit').val('Modificar');
             }
@@ -161,19 +166,29 @@ var PetView = (function(){
             $(query + ' input[name="id"]').val('');
             $('#btnSubmit').val('Crear');   
         };
+
+        this.ToggleView = function() {
+            $('#' + petsByOwnerContainerId).toggle();
+            $('#' + petsContainerId).toggle();
+            titleTxt = $('#title-view').text(); 
+            $('#title-view').text($('#toggle-view-btn').text());
+            $('#toggle-view-btn').text(titleTxt);
+        };
     };
 
     var insertOwnerPetsForm = function(parent) {
         parent.append(
             '<form id="' + formPetOwnerId + '" class="mb-5 mb-10">\
                 <div class="row">\
-                    <divclass="col-sm-3">\
+                    <div class="col-sm-3">\
                         <input name="owner_id" type="number" value="" placeholder="Id Dueño" class="form-control" required/>\
                     </div>\
                     <div class="col-sm-3">\
-                        <input id="btnSubmit" type="submit" value="Listar" class="btn btn-primary"/>\
-                        <input id="btnClear" type="reset" value="Limpiar" class="btn"/>\
+                        <input id="btnList" type="submit" value="Listar" class="btn btn-primary"/>\
                     </div>\
+                    <div class="col-sm-3">\
+                        <input id="btnClear" type="reset" value="Limpiar" class="btn btn-secondary"/>\
+                    <div>\
                 </div>\
             </form>'
         );
@@ -198,7 +213,7 @@ var PetView = (function(){
                 </div>\
                 <div class="col-sm-2">\
                     <input id="btnSubmit" type="submit" value="Crear" class="btn btn-primary"/>\
-                    <input id="btnClear" type="reset" value="Limpiar" class="btn"/>\
+                    <input id="btnClear" type="reset" value="Limpiar" class="btn btn-secondary"/>\
                 <div>\
             </div>\
             </form>'
@@ -240,6 +255,22 @@ var PetView = (function(){
         );
     };
 
+    var insertToggleViewHeader = function(parent) {
+        parent.prepend(
+            '<div class="d-flex justify-content-between align-items-center">\
+                <h1 id="title-view" class="display-5 mt-3 mb-3">Mascotas</h1>\
+                <a id="toggle-view-btn" class="btn btn-primary" href="#">Listar por Dueño</a>\
+            </div>'
+        );
+    };
+
+    var addToggleViewListener = function() {
+        $('#toggle-view-btn').click(function() {
+            self.ToggleView();
+
+        });
+    }
+
     var appendToTable = function(pet) {
         $(listAllPetsQuery + ' > tbody:last').append(createPetRow(pet));
         addRowListeners(pet);
@@ -250,12 +281,12 @@ var PetView = (function(){
         addRowListeners(pet);
     };
 
-    var createPetRow = function(pet) {
+    var createPetRow = function(pet) {        
         return '<tr id="pet-' + pet.id +'" class="row">\
             <td class="name col-sm-3">' + pet.name + '</td>\
-            <td class="specie col-sm-2">' + pet.species + '</td>\
+            <td class="species col-sm-2">' + pet.species + '</td>\
             <td class="breed col-sm-3">' + pet.breed + '</td>\
-            <td class="owner_id col-sm-2">' + pet.ownerId + '</td>\
+            <td class="ownerId col-sm-2">' + pet.ownerId + '</td>\
             <td class="col-sm-2">\
                 <a class="edit btn btn-primary" href="#">Editar</a>\
                 <a class="delete btn btn-warning" href="#">Eliminar</a>\
