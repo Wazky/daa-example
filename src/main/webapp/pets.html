@@ -19,10 +19,18 @@
             </div>
         </div>
     </header>
-    
+
+    <h1 class="display-5 mt-3 mb-3">Mascotas</h1>
+
+    <div class="container">
+        <div id="owner-pets-container">
+            <h1 class="display-7 mt-2 mb-2">Mascotas por dueño</h1>
+        </div>
+    </div>
+
     <div class="container">
         <div id="pets-container">
-            <h1 class="display-5 mt-3 mb-3">Mascotas</h1>
+            <h1 class="display-7 mt-2 mb-2">Todas las mascotas</h1>
         </div>
     </div>
 
@@ -45,7 +53,7 @@
                     });
 
                     var view = new PetView(new PetDAO(),
-                        'pets-container', 'pets-container'
+                        'pets-container', 'owner-pets-container'
                     );
 
                     view.init();

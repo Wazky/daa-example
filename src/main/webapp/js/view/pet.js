@@ -3,17 +3,25 @@ var PetView = (function(){
 
     var self;
 
+    
     var formId = 'pet-form';
-    var listId = 'pet-list';
+    var listAllPetsId = 'pet-list';
     var formQuery = '#' + formId;
-    var listQuery = '#' + listId;
+    var listAllPetsQuery = '#' + listAllPetsId;
 
-    function PetView(petDao, formContainerId, listContainerId) {
+    var formPetOwnerId = 'pet-owner-form';
+    var listPetsOwnerId = 'owner-pet-list';
+    var listPetsOwnerQuery = '#' + listPetsOwnerId;
+    var formPetOwnerQuery = '#' + formPetOwnerId;
+
+    function PetView(petDao,  petsContainerId, petsByOwnerContainerId) {
         dao = petDao;
         self = this;
 
-        insertPetForm($('#' + formContainerId));
-        insertPetList($('#' + listContainerId));
+        insertOwnerPetsForm($('#' + petsByOwnerContainerId));
+        insertOwnerPetsList($('#' + petsByOwnerContainerId));
+        insertPetForm($('#' + petsContainerId));        
+        insertPetList($('#' + petsContainerId));
 
         this.init = function() {
             dao.listPets(function(pets){
@@ -23,6 +31,26 @@ var PetView = (function(){
             },
             function() {
                 alert('No ha sido posible acceder al listado de mascotas.');
+            });
+
+            $(formPetOwnerQuery).submit(function() {
+                var owner_id = self.getOwnerId();
+                //Limpiar tbody antes de agregar mascotas de nuevo dueño
+                $(listPetsOwnerQuery + ' tbody').empty();
+
+                dao.listByOwner(owner_id,
+                    function(pets) {
+                        $.each(pets, function(key, pet) {
+                            appendToOwnerTable(pet);
+                            self.resetForm(formPetOwnerQuery);
+                        });
+                    },
+                    function() {
+                        alert('No ha sido posible acceder al listado de mascotas del propietario');
+                    }
+                );
+
+                return false;
             });
 
             $(formQuery).submit(function(event) {
@@ -35,7 +63,7 @@ var PetView = (function(){
                             $('#pet-' + pet.id + ' td.name').text(pet.specie);
                             $('#pet-' + pet.id + ' td.name').text(pet.breed);
                             $('#pet-' + pet.id + ' td.name').text(pet.owner_id);
-                            self.resetForm();
+                            self.resetForm(formQuery);
                         },
                         showErrorMessage,
                         self.enableForm
@@ -44,7 +72,7 @@ var PetView = (function(){
                     dao.addPet(pet,
                         function(pet) {
                             appendToTable(pet);
-                            self.resetForm();
+                            self.resetForm(formQuery);
                         },
                         showErrorMessage,
                         self.enableForm
@@ -55,6 +83,11 @@ var PetView = (function(){
             });
 
             $('btnClear').click(this.resetForm);
+        };
+
+        this.getOwnerId = function() {
+            var input = $(formPetOwnerQuery);
+            return input.find('input[name="owner_id"]').val();
         };
 
         this.getPetInForm = function() {
@@ -123,11 +156,27 @@ var PetView = (function(){
             $(formQuery + ' input').prop('disabled', true);
         };
 
-        this.resetForm = function() {
-            $(formQuery)[0].reset();
-            $(formQuery + ' input[name="id"]').val('');
+        this.resetForm = function(query) {
+            $(query)[0].reset();
+            $(query + ' input[name="id"]').val('');
             $('#btnSubmit').val('Crear');   
         };
+    };
+
+    var insertOwnerPetsForm = function(parent) {
+        parent.append(
+            '<form id="' + formPetOwnerId + '" class="mb-5 mb-10">\
+                <div class="row">\
+                    <divclass="col-sm-3">\
+                        <input name="owner_id" type="number" value="" placeholder="Id Dueño" class="form-control" required/>\
+                    </div>\
+                    <div class="col-sm-3">\
+                        <input id="btnSubmit" type="submit" value="Listar" class="btn btn-primary"/>\
+                        <input id="btnClear" type="reset" value="Limpiar" class="btn"/>\
+                    </div>\
+                </div>\
+            </form>'
+        );
     };
 
     var insertPetForm = function(parent) {
@@ -158,13 +207,30 @@ var PetView = (function(){
 
     var insertPetList = function(parent) {
         parent.append(
-            '<table id="' + listId + '" class="table">\
+            '<table id="' + listAllPetsId + '" class="table">\
+                <thead>\
+                    <tr class="row">\
+                        <th class="col-sm-3">Nombre</th>\
+                        <th class="col-sm-2">Especie</th>\
+                        <th class="col-sm-3">Raza</th>\
+                        <th class="col-sm-2">Id Dueño</th>\
+                        <th class="col-sm-2">&nbsp;</th>\
+                    </tr>\
+                </thead>\
+                <tbody>\
+                </tbody>\
+            </table>'
+        );
+    };
+
+    var insertOwnerPetsList = function(parent) {
+        parent.append(
+            '<table id="' + listPetsOwnerId +'" class="table">\
             <thead>\
                 <tr class="row">\
-                    <th class="col-sm-3">Nombre</th>\
+                    <th class="col-sm-4">Nombre</th>\
                     <th class="col-sm-2">Especie</th>\
-                    <th class="col-sm-3">Raza</th>\
-                    <th class="col-sm-2">Id Dueño</th>\
+                    <th class="col-sm-4">Raza</th>\
                     <th class="col-sm-2">&nbsp;</th>\
                 </tr>\
             </thead>\
@@ -175,7 +241,12 @@ var PetView = (function(){
     };
 
     var appendToTable = function(pet) {
-        $(listQuery + ' > tbody:last').append(createPetRow(pet));
+        $(listAllPetsQuery + ' > tbody:last').append(createPetRow(pet));
+        addRowListeners(pet);
+    };
+
+    var appendToOwnerTable = function(pet) {
+        $(listPetsOwnerQuery + ' > tbody:last').append(createPetRow(pet));
         addRowListeners(pet);
     };
 
@@ -208,3 +279,4 @@ var PetView = (function(){
 
     return PetView;
 })();
+
