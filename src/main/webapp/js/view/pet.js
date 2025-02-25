@@ -2,6 +2,7 @@ var PetView = (function(){
     var dao;
 
     var self;
+    var speciesList = ['DOG','CAT','BIRD','RABBIT','OTHER'];
 
     
     var formId = 'pet-form';
@@ -18,16 +19,28 @@ var PetView = (function(){
         dao = petDao;
         self = this;
 
+        //Create header and view toggle button
         insertToggleViewHeader($('#' + mainContainerId));
         addToggleViewListener();
-        
+
+        /*View 1: (Default on charge)
+            Create and insert: pet form and all pets list
+        */
+        insertPetForm($('#' + petsContainerId));
+        //Get the select id
+        select_id = $(formQuery + ' select').attr('id');
+        //Fill the select with the species
+        insertSelectOptions($('#' + select_id));               
+        insertPetList($('#' + petsContainerId));
+        /*View 2:
+            Create and insert : list by owner form and owner pets list
+        */
         insertOwnerPetsForm($('#' + petsByOwnerContainerId));
         insertOwnerPetsList($('#' + petsByOwnerContainerId));
-        insertPetForm($('#' + petsContainerId));        
-        insertPetList($('#' + petsContainerId));
 
         //Ocultar al cargar pagina listar por id owner
         $('#' + petsByOwnerContainerId).hide();
+
         this.init = function() {
             dao.listPets(function(pets){
                 $.each(pets, function(key, pet) {
@@ -60,7 +73,7 @@ var PetView = (function(){
 
             $(formQuery).submit(function(event) {
                 var pet = self.getPetInForm();
-                console.log(pet);
+                
                 if (self.isEditing()) {
                     dao.modifyPet(pet,
                         function(pet) {
@@ -100,7 +113,7 @@ var PetView = (function(){
             return {
                 'id' : form.find('input[name="id"]').val(),
                 'name' : form.find('input[name="name"]').val(),
-                'specie' : form.find('input[name="specie"]').val(),
+                'specie' : form.find('select[name="specie-select"]').val(),
                 'breed' : form.find('input[name="breed"]').val(),
                 'owner_id' : form.find('input[name="owner_id"]').val()
             }
@@ -129,8 +142,8 @@ var PetView = (function(){
                 var form = $(formQuery);
 
                 form.find('input[name="id"]').val(id);
-                form.find('input[name="name"]').val(row.find('td.name').text());
-                form.find('input[name="specie"]').val(row.find('td.species').text());
+                form.find('input[name="name"]').val(row.find('td.name').text());                            
+                form.find('select[name="specie-select"]').val(row.find('td.species').text());
                 form.find('input[name="breed"]').val(row.find('td.breed').text());
                 form.find('input[name="owner_id"]').val(row.find('td.ownerId').text());
 
@@ -202,10 +215,12 @@ var PetView = (function(){
                 <div class="col-sm-3">\
                     <input name="name" type="text" value="" placeholder="Nombre" class="form-control" required/>\
                 </div>\
-                <div class="col-sm-2">\
-                    <input name="specie" type="text" value="" placeholder="Especie" class="form-control" required/>\
-                </div>\
                 <div class="col-sm-3">\
+                    <select name="specie-select" id="specie-select">\
+                            <option selected disabled>-Select Specie-</option>\
+                    </select>\
+                </div>\
+                <div class="col-sm-2">\
                     <input name="breed" type="text" value="" placeholder="Raza" class="form-control"/>\
                 </div>\
                 <div class="col-sm-2">\
@@ -218,6 +233,14 @@ var PetView = (function(){
             </div>\
             </form>'
         );
+    };
+
+    var insertSelectOptions = function(parent) {
+        speciesList.forEach(function(specie) {
+            parent.append(
+                '<option value="' + specie + '">' + specie + '</option>'
+            );
+        }); 
     };
 
     var insertPetList = function(parent) {
