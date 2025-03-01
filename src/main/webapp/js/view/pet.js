@@ -4,7 +4,8 @@ var PetView = (function(){
     var self;
     var speciesList = ['DOG','CAT','BIRD','RABBIT','OTHER'];
 
-    
+    var mainContainerId;
+
     var formId = 'pet-form';
     var listAllPetsId = 'pet-list';
     var formQuery = '#' + formId;
@@ -15,33 +16,32 @@ var PetView = (function(){
     var listPetsOwnerQuery = '#' + listPetsOwnerId;
     var formPetOwnerQuery = '#' + formPetOwnerId;
 
-    function PetView(petDao, mainContainerId, petsContainerId, petsByOwnerContainerId) {
+    function PetView(petDao, containerId) {
         dao = petDao;
         self = this;
-
-        //Create header and view toggle button
-        insertToggleViewHeader($('#' + mainContainerId));
-        addToggleViewListener();
-
-        /*View 1: (Default on charge)
-            Create and insert: pet form and all pets list
-        */
-        insertPetForm($('#' + petsContainerId));
-        //Get the select id
-        select_id = $(formQuery + ' select').attr('id');
-        //Fill the select with the species
-        insertSelectOptions($('#' + select_id));               
-        insertPetList($('#' + petsContainerId));
-        /*View 2:
-            Create and insert : list by owner form and owner pets list
-        */
-        insertOwnerPetsForm($('#' + petsByOwnerContainerId));
-        insertOwnerPetsList($('#' + petsByOwnerContainerId));
-
-        //Ocultar al cargar pagina listar por id owner
-        $('#' + petsByOwnerContainerId).hide();
+        mainContainerId = containerId;
 
         this.init = function() {
+            //Create header and view toggle button
+            insertToggleViewHeader($('#' + mainContainerId));
+            addToggleViewListener();
+
+            /*View 1: (Default on charge)
+                Create and insert: pet form and all pets list
+            */
+            insertPetForm($('#' + mainContainerId));
+            insertPetList($('#' + mainContainerId));
+            /*View 2:
+                Create and insert : list by owner form and owner pets list
+            */
+            insertOwnerPetsForm($('#' + mainContainerId));
+            insertOwnerPetsList($('#' + mainContainerId));
+
+            //Ocultar al cargar pagina listar por id owner
+            //$('#' + mainContainerId).hide();
+            $(formPetOwnerQuery).hide();
+            $(listPetsOwnerQuery).hide();
+
             dao.listPets(function(pets){
                 $.each(pets, function(key, pet) {
                     appendToTable(pet);
@@ -181,11 +181,16 @@ var PetView = (function(){
         };
 
         this.ToggleView = function() {
-            $('#' + petsByOwnerContainerId).toggle();
-            $('#' + petsContainerId).toggle();
+            //Show or hide view 1
+            $(formQuery).toggle();
+            $(listAllPetsQuery).toggle();
+            //Show or hide view 2
+            $(formPetOwnerQuery).toggle();
+            $(listPetsOwnerQuery).toggle();
+            //Change title
             titleTxt = $('#title-view').text(); 
-            $('#title-view').text($('#toggle-view-btn').text());
-            $('#toggle-view-btn').text(titleTxt);
+            $('#title-view').text($('#toggle-pet-view-btn').text());
+            $('#toggle-pet-view-btn').text(titleTxt);
         };
     };
 
@@ -208,6 +213,8 @@ var PetView = (function(){
     };
 
     var insertPetForm = function(parent) {
+        specieSelectId = 'specie-select';
+
         parent.append(
             '<form id="' + formId + '" class="mb-5 mb-10">\
             <input name="id" type="hidden" value=""/>\
@@ -216,7 +223,7 @@ var PetView = (function(){
                     <input name="name" type="text" value="" placeholder="Nombre" class="form-control" required/>\
                 </div>\
                 <div class="col-sm-3">\
-                    <select name="specie-select" id="specie-select">\
+                    <select name="specie-select" id="' + specieSelectId + '">\
                             <option selected disabled>-Select Specie-</option>\
                     </select>\
                 </div>\
@@ -233,14 +240,11 @@ var PetView = (function(){
             </div>\
             </form>'
         );
-    };
 
-    var insertSelectOptions = function(parent) {
+        var select = $('#' + specieSelectId);
         speciesList.forEach(function(specie) {
-            parent.append(
-                '<option value="' + specie + '">' + specie + '</option>'
-            );
-        }); 
+            select.append('<option value"' + specie + '">' + specie + '</option>');
+        });
     };
 
     var insertPetList = function(parent) {
@@ -282,13 +286,13 @@ var PetView = (function(){
         parent.prepend(
             '<div class="d-flex justify-content-between align-items-center">\
                 <h1 id="title-view" class="display-5 mt-3 mb-3">Mascotas</h1>\
-                <a id="toggle-view-btn" class="btn btn-primary" href="#">Listar por Dueño</a>\
+                <a id="toggle-pet-view-btn" class="btn btn-primary" href="#">Listar por Dueño</a>\
             </div>'
         );
     };
 
     var addToggleViewListener = function() {
-        $('#toggle-view-btn').click(function() {
+        $('#toggle-pet-view-btn').click(function() {
             self.ToggleView();
 
         });

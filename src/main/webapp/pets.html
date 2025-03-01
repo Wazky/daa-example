@@ -19,6 +19,14 @@
             </div>
         </div>
     </header>
+
+	<div class="container">
+		<div id="main-container">
+			<h1 class="display-5 mt-3 mb-3">Personas</h1>
+		</div>
+	</div>
+
+
     <div id="id-main-container" class="container">
 
         <div class="container">
@@ -51,7 +59,7 @@
                     });
 
                     var view = new PetView(new PetDAO(),
-                        'id-main-container', 'pets-container', 'owner-pets-container'
+                        'main-container'
                     );
 
                     view.init();

@@ -4,19 +4,23 @@
 		// Referencia a this que permite acceder a las funciones públicas desde las funciones de jQuery.
 		var self;
 		
+		var mainContainerId;
+
 		var formId = 'people-form';
 		var listId = 'people-list';
 		var formQuery = '#' + formId;
 		var listQuery = '#' + listId;
 		
-		function PeopleView(peopleDao, formContainerId, listContainerId) {
+		function PeopleView(peopleDao, containerId) {
 			dao = peopleDao;
 			self = this;
-			
-			insertPeopleForm($('#' + formContainerId));
-			insertPeopleList($('#' + listContainerId));
+			mainContainerId = containerId;
 			
 			this.init = function() {
+
+				insertPeopleForm($('#' + mainContainerId));
+				insertPeopleList($('#' + mainContainerId));
+
 				dao.listPeople(function(people) {
 					$.each(people, function(key, person) {
 						appendToTable(person);
@@ -193,4 +197,4 @@
 		};
 		
 		return PeopleView;
-	})();
+})();
