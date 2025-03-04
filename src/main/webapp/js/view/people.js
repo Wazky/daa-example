@@ -5,22 +5,25 @@
 		var self;
 		
 		var mainContainerId;
+		var viewController
 
 		var formId = 'people-form';
 		var listId = 'people-list';
 		var formQuery = '#' + formId;
 		var listQuery = '#' + listId;
 		
-		function PeopleView(peopleDao, containerId) {
+		function PeopleView(peopleDao, containerId, viewController) {
 			dao = peopleDao;
 			self = this;
 			mainContainerId = containerId;
-			
+			this.viewController = viewController;
+
 			this.init = function() {
 
+				insertPeopleHeader($('#' + mainContainerId));
 				insertPeopleForm($('#' + mainContainerId));
 				insertPeopleList($('#' + mainContainerId));
-
+				
 				dao.listPeople(function(people) {
 					$.each(people, function(key, person) {
 						appendToTable(person);
@@ -129,6 +132,14 @@
 			};
 		};
 		
+		var insertPeopleHeader = function(parent) {
+			parent.append(
+				'<div class="d-flex justify-content-between align-items-center">\
+				<h1 class="display-5 mt-3 mb-3">Personas</h1>\
+				</div>'
+			);
+		};
+
 		var insertPeopleList = function(parent) {
 			parent.append(
 				'<table id="' + listId + '" class="table">\
@@ -172,6 +183,7 @@
 				<td class="col-sm-3">\
 					<a class="edit btn btn-primary" href="#">Editar</a>\
 					<a class="delete btn btn-warning" href="#">Eliminar</a>\
+					<a class="pets-view btn btn-secondary" href="#" data-owner-id="' + person.id + '">Mascotas</a>\
 				</td>\
 			</tr>';
 		};
@@ -187,6 +199,13 @@
 			
 			$('#person-' + person.id + ' a.delete').click(function() {
 				self.deletePerson(person.id);
+			});
+
+			$('#person-' + person.id + ' a.pets-view').click(function() {
+				var ownerId = $(this).data('owner-id');
+				var ownerName = $('#person-' + ownerId + ' td.name').text();
+				var ownerSurname = $('#person-' + ownerId + ' td.surname').text();
+				self.viewController.petsByOwnerView(ownerId, ownerName + ' ' + ownerSurname);
 			});
 		};
 
